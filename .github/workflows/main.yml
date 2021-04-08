@@ -1,0 +1,54 @@
+name: "CodeQL"
+
+on:
+ workflow_dispatch:
+
+  schedule:
+    - cron: '29 13 * * 1'
+
+jobs:
+  analyze:
+    name: Analyze
+    runs-on: ${{ matrix.os }}
+
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [centos-latest,  ubuntu-latest]
+        language: [ 'go']
+        # CodeQL supports [ 'cpp', 'csharp', 'go', 'java', 'javascript', 'python' ]
+        # Learn more:
+        # https://docs.github.com/github/finding-security-vulnerabilities-and-errors-in-your-code/configuring-code-scanning#changing-the-languages-that-are-analyzed
+
+        
+    steps:
+    - uses: actions/checkout@v2
+    - name: git version
+      run: git --version
+    - name: Set up Go 1.x
+      uses: actions/setup-go@v2
+      with:
+        go-version: ^1.13
+      
+    - name: Checkout repository
+      uses: actions/checkout@v2
+     # uses: actions/checkout@a81bbbf8298c0fa03ea29cdc473d45769f953675
+
+    # Initializes the CodeQL tools for scanning.
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v1
+      with:
+        languages: ${{ matrix.language }}
+
+    - name: ls
+      run: ls -la
+
+    # Autobuild attempts to build any compiled languages  (C/C++, C#, or Java).
+    # If this step fails, then you should remove it and run the build manually (see below)
+    - name: Autobuild
+      uses: github/codeql-action/autobuild@v1
+
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v1
